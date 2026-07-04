@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Into the Deep — Ocean Parallax</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:#020b18;color:#e8f4f8;overflow-x:hidden;}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;transform:none!important;}}
+
+/* ─── SCROLL PROGRESS BAR ─── */
+#prog{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,#00d4ff,#7b2fff);z-index:100;transition:width 0.1s;}
+
+/* ─── NAV ─── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:90;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 48px;
+  background:linear-gradient(#020b18cc,transparent);
+  pointer-events:none;
+}
+nav .logo{font-family:'Playfair Display',serif;font-style:italic;font-size:22px;letter-spacing:0.02em;color:#a8e6f0;pointer-events:all;}
+nav ul{list-style:none;display:flex;gap:32px;pointer-events:all;}
+nav ul li a{text-decoration:none;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,244,248,0.6);transition:color 0.3s;}
+nav ul li a:hover{color:#a8e6f0;}
+
+/* ─── SECTION BASE ─── */
+.pxsection{
+  position:relative;overflow:hidden;
+  width:100%;display:flex;align-items:center;justify-content:center;
+}
+
+/* ─── 1. HERO ─── */
+#hero{
+  height:100vh;
+  background:linear-gradient(180deg,#020b18 0%,#041c35 50%,#062a4e 100%);
+}
+#hero .stars{position:absolute;inset:0;}
+#hero .stars span{
+  position:absolute;border-radius:50%;
+  background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite;
+}
+@keyframes twinkle{0%,100%{opacity:0.2;transform:scale(1);}50%{opacity:1;transform:scale(1.4);}}
+
+#hero .surface{
+  position:absolute;bottom:0;left:0;right:0;height:45%;
+  background:linear-gradient(transparent, rgba(0,60,100,0.4) 30%, rgba(0,40,80,0.8));
+}
+#hero .wave-wrap{position:absolute;bottom:0;left:0;right:0;}
+#hero .wave-wrap svg{display:block;width:100%;}
+
+.hero-content{position:relative;z-index:5;text-align:center;padding:0 24px;}
+.hero-content .tagline{font-size:13px;letter-spacing:0.3em;text-transform:uppercase;color:#a8e6f0;margin-bottom:20px;opacity:0;animation:fadeUp 1s 0.3s forwards;}
+.hero-content h1{font-family:'Playfair Display',serif;font-size:clamp(3.5rem,9vw,7rem);line-height:0.9;font-weight:700;opacity:0;animation:fadeUp 1s 0.5s forwards;}
+.hero-content h1 em{font-style:italic;color:#a8e6f0;}
+.hero-content .sub{margin-top:24px;font-size:clamp(1rem,1.8vw,1.2rem);font-weight:300;color:rgba(232,244,248,0.7);max-width:540px;margin-left:auto;margin-right:auto;line-height:1.7;opacity:0;animation:fadeUp 1s 0.8s forwards;}
+.hero-content .scroll-cue{margin-top:56px;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(168,230,240,0.5);opacity:0;animation:fadeUp 1s 1.2s forwards;}
+.hero-content .scroll-cue span{display:inline-block;margin-top:10px;animation:bounce 2s ease-in-out infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(10px);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+
+/* ─── 2. SUNLIGHT ZONE ─── */
+#sunlight{
+  min-height:100vh;
+  background:linear-gradient(180deg,#062a4e,#083d6e 40%,#0a4f8a);
+  padding:100px 0;
+}
+.depth-label{
+  position:absolute;right:48px;top:50%;transform:translateY(-50%);
+  text-align:right;
+}
+.depth-label .meters{font-family:'Playfair Display',serif;font-size:72px;font-weight:700;color:rgba(168,230,240,0.12);line-height:1;}
+.depth-label .zone{font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(168,230,240,0.5);}
+
+.content-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;
+  max-width:1100px;margin:0 auto;padding:0 60px;
+  position:relative;z-index:2;
+}
+.content-grid.reverse{direction:rtl;}
+.content-grid.reverse > *{direction:ltr;}
+
+.text-block{display:flex;flex-direction:column;justify-content:center;}
+.text-block .eyebrow{font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#a8e6f0;margin-bottom:16px;}
+.text-block h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);line-height:1.15;margin-bottom:20px;}
+.text-block p{font-size:16px;line-height:1.8;color:rgba(232,244,248,0.75);font-weight:300;}
+.text-block p+p{margin-top:14px;}
+.text-block .fact{
+  display:inline-flex;align-items:center;gap:10px;
+  margin-top:24px;padding:12px 20px;
+  border:1px solid rgba(168,230,240,0.2);border-radius:4px;
+  font-size:13px;letter-spacing:0.06em;color:#a8e6f0;
+  background:rgba(168,230,240,0.05);
+}
+
+/* ocean illustration blocks */
+.illus{position:relative;display:flex;align-items:center;justify-content:center;}
+.illus svg{width:100%;max-width:460px;}
+
+/* parallax floating elements */
+.float-el{position:absolute;will-change:transform;pointer-events:none;}
+
+/* ─── 3. TWILIGHT ZONE ─── */
+#twilight{
+  min-height:100vh;
+  background:linear-gradient(180deg,#0a4f8a,#071f45 40%,#050f2a);
+  padding:100px 0;
+  overflow:hidden;
+}
+
+/* ─── 4. MIDNIGHT ZONE ─── */
+#midnight{
+  min-height:100vh;
+  background:linear-gradient(180deg,#050f2a,#030820 40%,#020518);
+  padding:100px 0;
+  overflow:hidden;
+}
+
+/* ─── 5. ABYSS ─── */
+#abyss{
+  min-height:100vh;
+  background:linear-gradient(180deg,#020518,#01030f);
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;overflow:hidden;
+}
+#abyss .abyss-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,5rem);font-weight:700;color:rgba(168,230,240,0.15);position:relative;z-index:2;}
+#abyss .abyss-sub{font-size:16px;color:rgba(232,244,248,0.3);max-width:460px;margin:20px auto 0;line-height:1.8;position:relative;z-index:2;}
+.vent-glow{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:300px;height:200px;background:radial-gradient(ellipse at 50% 100%,rgba(255,100,30,0.25),transparent 70%);pointer-events:none;}
+
+/* ─── 6. SURFACE / CTA ─── */
+#surface{
+  min-height:80vh;
+  background:linear-gradient(180deg,#01030f,#020b18 50%,#041c35);
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:100px 24px;
+}
+.cta-block h2{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5vw,4rem);line-height:1.1;margin-bottom:20px;}
+.cta-block p{font-size:17px;color:rgba(232,244,248,0.65);max-width:480px;margin:0 auto;line-height:1.8;font-weight:300;}
+.cta-btn{
+  display:inline-block;margin-top:40px;
+  padding:16px 44px;
+  background:transparent;
+  border:1.5px solid #a8e6f0;
+  color:#a8e6f0;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;letter-spacing:0.2em;text-transform:uppercase;
+  text-decoration:none;cursor:pointer;
+  transition:background 0.3s,color 0.3s;
+  border-radius:2px;
+}
+.cta-btn:hover{background:#a8e6f0;color:#020b18;}
+
+/* ─── REVEAL on scroll ─── */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.8s ease,transform 0.8s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-50px);transition:opacity 0.9s ease,transform 0.9s ease;}
+.reveal-left.visible{opacity:1;transform:translateX(0);}
+.reveal-right{opacity:0;transform:translateX(50px);transition:opacity 0.9s ease,transform 0.9s ease;}
+.reveal-right.visible{opacity:1;transform:translateX(0);}
+
+/* ─── CREATURES ─── */
+.creature{position:absolute;pointer-events:none;will-change:transform;}
+
+/* ─── DIVIDER WAVE ─── */
+.section-wave{position:absolute;bottom:0;left:0;right:0;line-height:0;}
+.section-wave svg{display:block;width:100%;}
+.section-wave-top{position:absolute;top:0;left:0;right:0;line-height:0;}
+.section-wave-top svg{display:block;width:100%;}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  nav ul{display:none;}
+  nav{padding:18px 24px;}
+  .content-grid{grid-template-columns:1fr;gap:40px;padding:0 24px;}
+  .content-grid.reverse{direction:ltr;}
+  .illus{order:-1;}
+  .depth-label{display:none;}
+  .float-el{display:none;}
+}
+
+/* bioluminescence particles */
+.bio-dot{
+  position:absolute;border-radius:50%;
+  animation:blink var(--d,4s) ease-in-out infinite var(--delay,0s);
+  pointer-events:none;
+}
+@keyframes blink{0%,100%{opacity:0;transform:scale(0.5);}50%{opacity:1;transform:scale(1.2);}}
+
+/* horizontal fish swim */
+@keyframes swimRight{from{transform:translateX(-120px);}to{transform:translateX(calc(100vw + 120px));}}
+@keyframes swimLeft{from{transform:translateX(calc(100vw + 120px));}to{transform:translateX(-120px) scaleX(-1);}}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<nav>
+  <div class="logo">Into the Deep</div>
+  <ul>
+    <li><a href="#sunlight">Sunlight</a></li>
+    <li><a href="#twilight">Twilight</a></li>
+    <li><a href="#midnight">Midnight</a></li>
+    <li><a href="#abyss">Abyss</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════
+     SECTION 1 — HERO
+══════════════════════════════ -->
+<section class="pxsection" id="hero">
+  <div class="stars" id="starfield"></div>
+
+  <!-- parallax wave layers -->
+  <div class="float-el" id="wave1" style="bottom:28%;left:0;right:0;z-index:1;">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" width="100%" style="opacity:0.18;">
+      <path d="M0,40 C240,0 480,80 720,40 C960,0 1200,80 1440,40 L1440,80 L0,80Z" fill="#a8e6f0"/>
+    </svg>
+  </div>
+  <div class="float-el" id="wave2" style="bottom:14%;left:0;right:0;z-index:2;">
+    <svg viewBox="0 0 1440 90" preserveAspectRatio="none" width="100%" style="opacity:0.22;">
+      <path d="M0,50 C360,10 720,90 1080,45 C1260,22 1380,60 1440,50 L1440,90 L0,90Z" fill="#a8e6f0"/>
+    </svg>
+  </div>
+  <div class="float-el" id="wave3" style="bottom:0;left:0;right:0;z-index:3;">
+    <svg viewBox="0 0 1440 100" preserveAspectRatio="none" width="100%" style="opacity:0.35;">
+      <path d="M0,60 C180,20 360,100 540,60 C720,20 900,100 1080,60 C1260,20 1380,80 1440,60 L1440,100 L0,100Z" fill="#062a4e"/>
+    </svg>
+  </div>
+
+  <div class="hero-content" style="z-index:5;">
+    <p class="tagline">Ocean Depth Explorer</p>
+    <h1>Dive <em>Below</em><br>the Surface</h1>
+    <p class="sub">From sunlit shallows to crushing abyssal darkness — scroll through Earth's last frontier, one depth zone at a time.</p>
+    <div class="scroll-cue">Scroll to descend<br><span>↓</span></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SECTION 2 — SUNLIGHT ZONE
+══════════════════════════════ -->
+<section class="pxsection" id="sunlight" style="min-height:100vh;">
+  <div class="depth-label">
+    <div class="meters">200m</div>
+    <div class="zone">Sunlight Zone</div>
+  </div>
+
+  <!-- floating jellyfish parallax -->
+  <div class="float-el creature" id="jelly1" style="top:10%;left:8%;font-size:80px;opacity:0.7;">🪼</div>
+  <div class="float-el creature" id="jelly2" style="top:30%;right:10%;font-size:55px;opacity:0.5;">🪼</div>
+  <div class="float-el creature" id="fish1" style="top:50%;left:5%;font-size:36px;opacity:0.6;">🐠</div>
+
+  <!-- light rays -->
+  <div style="position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;overflow:hidden;">
+    <svg style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.07;" viewBox="0 0 1440 900" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="ray" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#a8e6f0"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </linearGradient>
+      </defs>
+      <polygon points="580,0 620,0 780,900 540,900" fill="url(#ray)"/>
+      <polygon points="780,0 820,0 1020,900 740,900" fill="url(#ray)"/>
+      <polygon points="980,0 1010,0 1200,900 950,900" fill="url(#ray)"/>
+      <polygon points="360,0 400,0 560,900 320,900" fill="url(#ray)"/>
+    </svg>
+  </div>
+
+  <div class="content-grid" style="position:relative;z-index:2;">
+    <div class="text-block reveal-left">
+      <span class="eyebrow">0 – 200 metres depth</span>
+      <h2>Where sunlight<br>still reaches</h2>
+      <p>The epipelagic zone is the ocean's most familiar layer. Sunlight penetrates deep enough to fuel photosynthesis, making it the source of almost all marine food chains. Coral reefs, sea turtles, dolphins, and the fish we recognize all live here.</p>
+      <p>Water temperature ranges from warm tropics to cold polar shelves, but life adapts to all of it. This thin slice represents less than 2% of the ocean's total volume — yet it holds most of its visible life.</p>
+      <span class="fact">💡 200m max light penetration</span>
+    </div>
+    <div class="illus reveal-right">
+      <svg viewBox="0 0 460 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- water ripple circles -->
+        <circle cx="230" cy="60" r="180" stroke="rgba(168,230,240,0.08)" stroke-width="1"/>
+        <circle cx="230" cy="60" r="140" stroke="rgba(168,230,240,0.07)" stroke-width="1"/>
+        <circle cx="230" cy="60" r="100" stroke="rgba(168,230,240,0.06)" stroke-width="1"/>
+        <!-- ocean floor -->
+        <path d="M20,370 Q80,340 140,370 Q200,400 260,360 Q320,330 380,370 Q420,390 440,380 L440,420 L20,420Z" fill="#041c35"/>
+        <!-- coral 1 -->
+        <path d="M80,370 C80,340 90,320 95,310 C90,320 100,340 105,370" stroke="#e05a7a" stroke-width="2" fill="none"/>
+        <circle cx="95" cy="308" r="6" fill="#e05a7a" opacity="0.8"/>
+        <path d="M90,340 C85,330 78,328 74,332" stroke="#e05a7a" stroke-width="1.5" fill="none"/>
+        <circle cx="73" cy="331" r="4" fill="#e05a7a" opacity="0.7"/>
+        <path d="M100,350 C106,340 113,338 116,342" stroke="#e05a7a" stroke-width="1.5" fill="none"/>
+        <circle cx="117" cy="341" r="4" fill="#e05a7a" opacity="0.7"/>
+        <!-- coral 2 -->
+        <path d="M320,370 C320,345 328,325 333,315 C328,325 338,345 343,370" stroke="#ff8a50" stroke-width="2" fill="none"/>
+        <circle cx="333" cy="313" r="7" fill="#ff8a50" opacity="0.8"/>
+        <!-- seaweed -->
+        <path d="M200,370 C195,355 205,345 200,330 C195,315 206,305 200,290" stroke="#2eb87a" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M210,370 C215,358 205,348 212,335 C218,322 208,312 214,300" stroke="#2eb87a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- big fish -->
+        <ellipse cx="260" cy="200" rx="55" ry="30" fill="#0a7ab5" opacity="0.9"/>
+        <polygon points="315,200 335,180 335,220" fill="#0a7ab5" opacity="0.9"/>
+        <circle cx="240" cy="194" r="6" fill="#e8f4f8" opacity="0.8"/>
+        <circle cx="241" cy="194" r="3" fill="#020b18"/>
+        <!-- small fish school -->
+        <ellipse cx="150" cy="150" rx="18" ry="9" fill="#a8e6f0" opacity="0.6"/>
+        <ellipse cx="172" cy="142" rx="15" ry="8" fill="#a8e6f0" opacity="0.55"/>
+        <ellipse cx="162" cy="162" rx="13" ry="7" fill="#a8e6f0" opacity="0.5"/>
+        <ellipse cx="132" cy="160" rx="14" ry="7.5" fill="#a8e6f0" opacity="0.52"/>
+        <!-- jellyfish -->
+        <path d="M370,120 Q390,90 410,120" stroke="rgba(200,170,240,0.8)" stroke-width="2" fill="rgba(200,170,240,0.15)"/>
+        <line x1="375" y1="120" x2="370" y2="150" stroke="rgba(200,170,240,0.4)" stroke-width="1"/>
+        <line x1="385" y1="122" x2="382" y2="155" stroke="rgba(200,170,240,0.4)" stroke-width="1"/>
+        <line x1="395" y1="122" x2="395" y2="158" stroke="rgba(200,170,240,0.4)" stroke-width="1"/>
+        <line x1="405" y1="120" x2="408" y2="152" stroke="rgba(200,170,240,0.4)" stroke-width="1"/>
+        <!-- bubbles -->
+        <circle cx="180" cy="310" r="4" stroke="rgba(168,230,240,0.4)" stroke-width="1" fill="none"/>
+        <circle cx="190" cy="290" r="3" stroke="rgba(168,230,240,0.35)" stroke-width="1" fill="none"/>
+        <circle cx="175" cy="270" r="5" stroke="rgba(168,230,240,0.3)" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section-wave">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" width="100%">
+      <path d="M0,0 C360,80 1080,0 1440,60 L1440,80 L0,80Z" fill="#071f45"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SECTION 3 — TWILIGHT ZONE
+══════════════════════════════ -->
+<section class="pxsection" id="twilight" style="min-height:100vh;padding:100px 0;">
+
+  <div class="depth-label">
+    <div class="meters" style="color:rgba(120,180,255,0.1);">1000m</div>
+    <div class="zone">Twilight Zone</div>
+  </div>
+
+  <!-- bioluminescence particles -->
+  <div id="bioParticles"></div>
+
+  <!-- whale silhouette parallax -->
+  <div class="float-el" id="whale" style="top:20%;left:50%;transform:translateX(-50%);width:500px;opacity:0.15;pointer-events:none;">
+    <svg viewBox="0 0 500 200" fill="none">
+      <path d="M50,100 C80,60 180,40 280,60 C380,80 430,90 460,80 C480,74 490,85 480,95 C470,105 450,100 430,110 C390,125 300,130 200,120 C130,113 60,140 50,100Z" fill="#e8f4f8"/>
+      <path d="M460,80 C475,70 490,75 488,88 C486,98 472,100 460,80Z" fill="#e8f4f8"/>
+      <!-- tail -->
+      <path d="M50,100 C35,80 10,60 15,100 C20,140 40,120 50,100Z" fill="#e8f4f8"/>
+      <path d="M15,100 C10,140 30,150 50,100" fill="#e8f4f8"/>
+    </svg>
+  </div>
+
+  <div class="content-grid reverse" style="position:relative;z-index:2;">
+    <div class="illus reveal-left">
+      <svg viewBox="0 0 460 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- dark water -->
+        <rect width="460" height="380" fill="rgba(7,31,69,0.4)" rx="4"/>
+        <!-- anglerfish body -->
+        <ellipse cx="230" cy="200" rx="75" ry="55" fill="#0a2545"/>
+        <ellipse cx="230" cy="200" rx="75" ry="55" stroke="rgba(0,212,255,0.15)" stroke-width="1"/>
+        <!-- mouth with teeth -->
+        <path d="M170,210 Q200,240 230,235 Q260,240 290,210" stroke="rgba(0,212,255,0.5)" stroke-width="2" fill="none"/>
+        <line x1="185" y1="212" x2="183" y2="230" stroke="rgba(200,230,255,0.6)" stroke-width="1.5"/>
+        <line x1="200" y1="218" x2="198" y2="235" stroke="rgba(200,230,255,0.6)" stroke-width="1.5"/>
+        <line x1="216" y1="220" x2="216" y2="237" stroke="rgba(200,230,255,0.6)" stroke-width="1.5"/>
+        <line x1="244" y1="220" x2="244" y2="237" stroke="rgba(200,230,255,0.6)" stroke-width="1.5"/>
+        <line x1="260" y1="218" x2="262" y2="235" stroke="rgba(200,230,255,0.6)" stroke-width="1.5"/>
+        <line x1="276" y1="212" x2="278" y2="229" stroke="rgba(200,230,255,0.6)" stroke-width="1.5"/>
+        <!-- eye -->
+        <circle cx="200" cy="185" r="14" fill="#061530"/>
+        <circle cx="200" cy="185" r="10" fill="#030d20"/>
+        <circle cx="196" cy="181" r="3" fill="rgba(168,230,240,0.9)"/>
+        <!-- lure stalk -->
+        <path d="M225,148 C220,130 210,110 215,90" stroke="rgba(168,230,240,0.6)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- lure glow -->
+        <circle cx="215" cy="88" r="14" fill="rgba(168,230,240,0.08)"/>
+        <circle cx="215" cy="88" r="9" fill="rgba(168,230,240,0.15)"/>
+        <circle cx="215" cy="88" r="5" fill="rgba(168,230,240,0.9)"/>
+        <!-- fins -->
+        <path d="M305,185 C330,170 350,190 340,210 C330,225 305,215 305,185Z" fill="#0a2545" stroke="rgba(0,212,255,0.1)" stroke-width="1"/>
+        <path d="M230,255 C210,275 240,295 270,275 C290,262 265,248 230,255Z" fill="#0a2545"/>
+        <!-- scattered bio dots -->
+        <circle cx="80" cy="60" r="2.5" fill="rgba(100,255,200,0.7)"/>
+        <circle cx="380" cy="80" r="2" fill="rgba(100,255,200,0.6)"/>
+        <circle cx="60" cy="180" r="3" fill="rgba(168,230,240,0.7)"/>
+        <circle cx="400" cy="300" r="2" fill="rgba(100,255,200,0.65)"/>
+        <circle cx="100" cy="320" r="2.5" fill="rgba(168,230,240,0.6)"/>
+        <circle cx="360" cy="160" r="2" fill="rgba(255,200,100,0.5)"/>
+        <circle cx="420" cy="220" r="2" fill="rgba(100,255,200,0.55)"/>
+        <circle cx="40" cy="280" r="3" fill="rgba(168,230,240,0.5)"/>
+      </svg>
+    </div>
+    <div class="text-block reveal-right">
+      <span class="eyebrow">200 – 1,000 metres depth</span>
+      <h2>Barely any<br>light survives</h2>
+      <p>In the mesopelagic zone, sunlight fades to a dim blue twilight. Pressure builds to dozens of atmospheres. Life here has evolved for extremes — bioluminescence replaces sunlight, and animals develop massive eyes or live in total darkness.</p>
+      <p>The anglerfish hunts by dangling a glowing lure. Vampire squid drift like ghosts. The vertical migration of millions of animals each day is the largest movement of biomass on Earth.</p>
+      <span class="fact">🔵 Largest daily animal migration on Earth</span>
+    </div>
+  </div>
+
+  <div class="section-wave">
+    <svg viewBox="0 0 1440 70" preserveAspectRatio="none" width="100%">
+      <path d="M0,20 C480,70 960,0 1440,50 L1440,70 L0,70Z" fill="#030820"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SECTION 4 — MIDNIGHT ZONE
+══════════════════════════════ -->
+<section class="pxsection" id="midnight" style="min-height:100vh;padding:100px 0;">
+
+  <div class="depth-label">
+    <div class="meters" style="color:rgba(80,100,180,0.09);">4000m</div>
+    <div class="zone">Midnight Zone</div>
+  </div>
+
+  <div id="midnightBio"></div>
+
+  <div class="content-grid" style="position:relative;z-index:2;">
+    <div class="text-block reveal-left">
+      <span class="eyebrow">1,000 – 4,000 metres depth</span>
+      <h2>Absolute<br>darkness</h2>
+      <p>Zero sunlight. Near-freezing temperatures. Crushing pressure that would instantly kill an unprotected human. The bathypelagic zone is Earth's largest habitat by volume — and we've explored less of it than the surface of Mars.</p>
+      <p>Life here is sparse but extraordinary. Giant squid hunt in these waters. Sperm whales dive down from the surface to pursue them. Deep-sea fish have evolved transparent bodies, red coloring invisible in these depths, and organs that produce their own cold light.</p>
+      <span class="fact">🦑 Giant squid grow to 13 metres here</span>
+    </div>
+    <div class="illus reveal-right">
+      <svg viewBox="0 0 460 380" fill="none">
+        <rect width="460" height="380" fill="rgba(3,8,32,0.6)" rx="4"/>
+        <!-- squid body -->
+        <ellipse cx="230" cy="160" rx="40" ry="90" fill="#0e1a4a"/>
+        <!-- mantle pattern -->
+        <ellipse cx="230" cy="160" rx="35" ry="80" stroke="rgba(80,120,255,0.15)" stroke-width="1" fill="none"/>
+        <ellipse cx="230" cy="160" rx="25" ry="60" stroke="rgba(80,120,255,0.1)" stroke-width="1" fill="none"/>
+        <!-- fin wings -->
+        <path d="M190,100 C160,80 155,110 185,130 Z" fill="#0e1a4a"/>
+        <path d="M270,100 C300,80 305,110 275,130 Z" fill="#0e1a4a"/>
+        <!-- tentacles -->
+        <path d="M210,245 C205,270 195,290 200,320" stroke="rgba(40,80,200,0.7)" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <path d="M218,248 C215,275 210,300 215,330" stroke="rgba(40,80,200,0.7)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M225,250 C224,280 224,310 228,340" stroke="rgba(40,80,200,0.65)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M232,250 C234,280 236,310 240,340" stroke="rgba(40,80,200,0.65)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M240,248 C244,274 250,298 253,328" stroke="rgba(40,80,200,0.7)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M248,245 C255,270 264,290 268,318" stroke="rgba(40,80,200,0.7)" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <!-- two long tentacles -->
+        <path d="M222,250 C210,290 185,330 180,370" stroke="rgba(40,80,200,0.5)" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M238,250 C252,290 275,330 280,370" stroke="rgba(40,80,200,0.5)" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <!-- eyes -->
+        <circle cx="210" cy="148" r="16" fill="#060f30"/>
+        <circle cx="210" cy="148" r="12" fill="#030820"/>
+        <circle cx="206" cy="144" r="4" fill="rgba(168,230,240,0.8)"/>
+        <circle cx="250" cy="148" r="16" fill="#060f30"/>
+        <circle cx="250" cy="148" r="12" fill="#030820"/>
+        <circle cx="246" cy="144" r="4" fill="rgba(168,230,240,0.8)"/>
+        <!-- bio dots scattered -->
+        <circle cx="50" cy="50" r="2" fill="rgba(100,150,255,0.6)"/>
+        <circle cx="410" cy="70" r="2.5" fill="rgba(100,150,255,0.5)"/>
+        <circle cx="30" cy="200" r="3" fill="rgba(80,120,255,0.5)"/>
+        <circle cx="430" cy="250" r="2" fill="rgba(100,150,255,0.55)"/>
+        <circle cx="70" cy="330" r="2" fill="rgba(80,120,255,0.45)"/>
+        <circle cx="390" cy="340" r="2.5" fill="rgba(100,150,255,0.5)"/>
+        <circle cx="380" cy="160" r="2" fill="rgba(150,200,255,0.4)"/>
+        <circle cx="80" cy="140" r="2" fill="rgba(100,150,255,0.5)"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section-wave">
+    <svg viewBox="0 0 1440 70" preserveAspectRatio="none" width="100%">
+      <path d="M0,40 C600,0 900,70 1440,30 L1440,70 L0,70Z" fill="#020518"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SECTION 5 — THE ABYSS
+══════════════════════════════ -->
+<section class="pxsection" id="abyss" style="min-height:100vh;padding:100px 24px;">
+  <div id="abyssBio"></div>
+  <div class="vent-glow"></div>
+  <div class="vent-glow" style="left:30%;width:200px;opacity:0.5;background:radial-gradient(ellipse at 50% 100%,rgba(255,80,20,0.2),transparent 70%);"></div>
+  <div class="vent-glow" style="left:70%;width:250px;opacity:0.6;"></div>
+
+  <!-- hydrothermal vent illustration -->
+  <div style="position:absolute;bottom:0;left:0;right:0;pointer-events:none;">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="none" width="100%" style="display:block;">
+      <!-- ocean floor -->
+      <path d="M0,160 Q200,140 400,165 Q600,185 800,155 Q1000,130 1200,158 Q1360,178 1440,165 L1440,200 L0,200Z" fill="#010310"/>
+      <!-- vent 1 -->
+      <path d="M300,165 L290,120 L310,120Z" fill="#1a0a02"/>
+      <path d="M290,120 Q295,80 300,60 Q305,80 310,120Z" fill="rgba(255,100,30,0.3)"/>
+      <!-- vent 2 -->
+      <path d="M900,155 L888,105 L912,105Z" fill="#1a0a02"/>
+      <path d="M888,105 Q896,65 900,40 Q904,65 912,105Z" fill="rgba(255,100,30,0.25)"/>
+      <!-- vent 3 -->
+      <path d="M1200,158 L1191,118 L1209,118Z" fill="#1a0a02"/>
+      <path d="M1191,118 Q1196,88 1200,70 Q1204,88 1209,118Z" fill="rgba(255,100,30,0.2)"/>
+    </svg>
+  </div>
+
+  <div style="position:relative;z-index:5;text-align:center;max-width:700px;">
+    <p class="reveal" style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:rgba(168,230,240,0.4);margin-bottom:20px;">4,000 – 6,000 metres depth</p>
+    <h2 class="abyss-title reveal" style="font-family:'Playfair Display',serif;font-size:clamp(2.5rem,6vw,5rem);font-weight:700;color:rgba(168,230,240,0.85);">The <em style="color:rgba(255,120,50,0.8);">Abyss</em></h2>
+    <p class="abyss-sub reveal">Near-freezing, pitch-black, and under pressure 600 times greater than at sea level. Hydrothermal vents here support entire ecosystems powered not by sunlight, but by chemical energy. Life doesn't stop — it just runs on different rules.</p>
+    <div class="reveal" style="display:flex;justify-content:center;gap:40px;margin-top:50px;flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;color:rgba(168,230,240,0.7);">−2°C</div>
+        <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.45;margin-top:4px;">Temperature</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;color:rgba(168,230,240,0.7);">600×</div>
+        <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.45;margin-top:4px;">Surface Pressure</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;color:rgba(255,120,50,0.7);">95%</div>
+        <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.45;margin-top:4px;">Unexplored</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SECTION 6 — SURFACE / CTA
+══════════════════════════════ -->
+<section class="pxsection" id="surface">
+  <div class="cta-block reveal">
+    <p style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#a8e6f0;opacity:0.6;margin-bottom:16px;">You've surfaced</p>
+    <h2>The ocean is<br>still mostly unknown.</h2>
+    <p>We've mapped more of Mars than the ocean floor. Every deep dive reveals species never recorded, ecosystems never imagined. The deep sea isn't an empty void — it's a world we've barely started to read.</p>
+    <a class="cta-btn" href="#hero">Descend again ↓</a>
+  </div>
+</section>
+
+<script>
+// ── star field ──
+(function(){
+  const sf = document.getElementById('starfield');
+  for(let i=0;i<120;i++){
+    const s = document.createElement('span');
+    const sz = Math.random()*2+0.5;
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*60}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s;`;
+    sf.appendChild(s);
+  }
+})();
+
+// ── bioluminescence particles ──
+function makeBio(containerId, count, colors){
+  const c = document.getElementById(containerId);
+  if(!c) return;
+  c.style.cssText='position:absolute;inset:0;pointer-events:none;';
+  for(let i=0;i<count;i++){
+    const d = document.createElement('div');
+    const sz = Math.random()*4+1.5;
+    const col = colors[Math.floor(Math.random()*colors.length)];
+    d.className='bio-dot';
+    d.style.cssText=`width:${sz}px;height:${sz}px;background:${col};top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${3+Math.random()*5}s;--delay:${Math.random()*5}s;`;
+    c.appendChild(d);
+  }
+}
+makeBio('bioParticles',60,['rgba(100,255,200,0.8)','rgba(168,230,240,0.8)','rgba(180,140,255,0.7)']);
+makeBio('midnightBio',80,['rgba(80,120,255,0.7)','rgba(100,150,255,0.6)','rgba(60,100,200,0.6)']);
+makeBio('abyssBio',50,['rgba(255,100,30,0.4)','rgba(255,140,60,0.35)','rgba(168,230,240,0.3)']);
+
+// ── scroll progress + parallax ──
+const prog = document.getElementById('prog');
+const railFill = document.getElementById('railFill');
+let ticking = false;
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const parallaxMap = [
+  {id:'wave1', speed:0.12},
+  {id:'wave2', speed:0.22},
+  {id:'wave3', speed:0.38},
+  {id:'jelly1', speed:0.18},
+  {id:'jelly2', speed:0.28},
+  {id:'fish1', speed:0.22},
+  {id:'whale', speed:0.14},
+];
+const pEls = parallaxMap.map(p=>({el:document.getElementById(p.id), speed:p.speed})).filter(p=>p.el);
+
+function onScroll(){
+  if(!ticking){requestAnimationFrame(render);ticking=true;}
+}
+function render(){
+  ticking=false;
+  const scrollTop = window.scrollY;
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  const frac = Math.min(Math.max(scrollTop/maxScroll,0),1);
+
+  prog.style.width = (frac*100)+'%';
+
+  if(!reduced){
+    pEls.forEach(p=>{
+      p.el.style.transform = `translateY(${scrollTop * p.speed}px)`;
+    });
+  }
+
+  // reveal on scroll
+  document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>{
+    const rect = el.getBoundingClientRect();
+    if(rect.top < window.innerHeight * 0.88) el.classList.add('visible');
+  });
+}
+
+window.addEventListener('scroll', onScroll, {passive:true});
+window.addEventListener('resize', onScroll);
+render();
+</script>
+</body>
+</html>
